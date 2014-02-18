@@ -61,7 +61,7 @@ static char UIScrollViewPullToRefreshView;
     KoaPullToRefreshViewHeightShowed = pullToRefreshHeightShowed;
     KoaPullToRefreshViewTitleBottomMargin += pullToRefreshHeightShowed;
     
-    [self setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed, self.contentInset.left, self.contentInset.bottom, self.contentInset.right)];
+    [self setContentInset:UIEdgeInsetsMake(self.contentInset.top + KoaPullToRefreshViewHeightShowed, self.contentInset.left, self.contentInset.bottom, self.contentInset.right)];
     
     if (!self.pullToRefreshView) {
         

@@ -292,6 +292,7 @@ static char UIScrollViewPullToRefreshView;
         self.scrollView.contentInset = UIEdgeInsetsMake(offset, contentInset.left, contentInset.bottom, contentInset.right);
     }
     
+    /*
     //Set content offset for special cases
     if(self.state != KoaPullToRefreshStateLoading) {
         if (self.scrollView.contentOffset.y > -KoaPullToRefreshViewHeightShowed && self.scrollView.contentOffset.y < 0) {
@@ -302,6 +303,7 @@ static char UIScrollViewPullToRefreshView;
             [self.scrollView setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed, self.scrollView.contentInset.left, self.scrollView.contentInset.bottom, self.scrollView.contentInset.right)];
         }
     }
+     */
 }
 
 

@@ -16,8 +16,23 @@
 @interface UIScrollView (KoaPullToRefresh)
 
 - (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler;
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler withBackgroundColor:(UIColor *)customBackgroundColor;
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler withBackgroundColor:(UIColor *)customBackgroundColor withPullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                      pullToRefreshHeight:(CGFloat)pullToRefreshHeight
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+
+
 
 @property (nonatomic, strong) KoaPullToRefreshView *pullToRefreshView;
 @property (nonatomic, assign) BOOL showsPullToRefresh;

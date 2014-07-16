@@ -44,20 +44,36 @@ static char UIScrollViewPullToRefreshView;
 @implementation UIScrollView (KoaPullToRefresh)
 @dynamic pullToRefreshView, showsPullToRefresh;
 
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler {
-    [self addPullToRefreshWithActionHandler:actionHandler withBackgroundColor:[UIColor grayColor]];
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+{
+    [self addPullToRefreshWithActionHandler:actionHandler backgroundColor:[UIColor grayColor]];
 }
 
 - (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
-                  withBackgroundColor:(UIColor *)customBackgroundColor {
-    [self addPullToRefreshWithActionHandler:actionHandler withBackgroundColor:customBackgroundColor withPullToRefreshHeightShowed:KoaPullToRefreshViewHeightShowed];
+                          backgroundColor:(UIColor *)customBackgroundColor
+{
+    [self addPullToRefreshWithActionHandler:actionHandler
+                            backgroundColor:customBackgroundColor
+                  pullToRefreshHeightShowed:KoaPullToRefreshViewHeightShowed];
 }
 
 - (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
-                      withBackgroundColor:(UIColor *)customBackgroundColor
-            withPullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed {
-    
-    //KoaPullToRefreshViewHeight = pullToRefreshHeight;
+                          backgroundColor:(UIColor *)customBackgroundColor
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed
+{
+    [self addPullToRefreshWithActionHandler:actionHandler
+                            backgroundColor:customBackgroundColor
+                        pullToRefreshHeight:KoaPullToRefreshViewHeight
+                  pullToRefreshHeightShowed:KoaPullToRefreshViewHeightShowed];
+}
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                      pullToRefreshHeight:(CGFloat)pullToRefreshHeight
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed
+{
+    KoaPullToRefreshViewHeight = pullToRefreshHeight;
     KoaPullToRefreshViewHeightShowed = pullToRefreshHeightShowed;
     KoaPullToRefreshViewTitleBottomMargin += pullToRefreshHeightShowed;
     

@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name     = 'KoaPullToRefresh'
+  s.name     = 'SMKoaPullToRefresh'
   s.version  = '1.0.6'
   s.platform = :ios, '5.0'
   s.license  = 'MIT'
@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.homepage = 'https://github.com/sergigracia/KoaPullToRefresh'
   
   s.author   = { 'Sergi Gracia' => 'sergigram@gmail.com', 'Polina Flegontovna' => 'polina.flegontovna@gmail.com' }
-  s.source   = { :git => 'https://github.com/sergigracia/KoaPullToRefresh.git', :tag => s.version.to_s }
+  s.source   = { :git => 'https://github.com/SMCorporation/KoaPullToRefresh.git', :tag => s.version.to_s }
 
   s.description = 'Add this custom, flat, minimal, modern pull-to-refresh ' \
                   'control to your app. You can change the font, colors, size ' \

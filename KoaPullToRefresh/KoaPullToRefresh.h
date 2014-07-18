@@ -63,6 +63,7 @@ typedef NSUInteger KoaPullToRefreshState;
 @property (nonatomic, strong, readonly) UILabel *loaderLabel;
 @property (nonatomic, strong, readonly) NSString *fontAwesomeIcon;
 @property (nonatomic, readonly) KoaPullToRefreshState state;
+@property (nonatomic, assign) BOOL disable;
 
 - (void)setTitle:(NSString *)title forState:(KoaPullToRefreshState)state;
 - (void)setFontAwesomeIcon:(NSString *)fontAwesomeIcon;

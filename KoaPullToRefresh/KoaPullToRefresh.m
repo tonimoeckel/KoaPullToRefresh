@@ -28,7 +28,8 @@ static CGFloat KoaPullToRefreshViewTitleBottomMargin = 12;
 @property (nonatomic, readwrite) CGFloat originalBottomInset;
 @property (nonatomic, assign) BOOL wasTriggeredByUser;
 @property (nonatomic, assign) BOOL showsPullToRefresh;
-@property(nonatomic, assign) BOOL isObserving;
+@property (nonatomic, assign) BOOL isObserving;
+@property (nonatomic, assign) CGFloat offsetY;
 
 - (void)resetScrollViewContentInset;
 - (void)setScrollViewContentInsetForLoading;
@@ -73,6 +74,20 @@ static char UIScrollViewPullToRefreshView;
                       pullToRefreshHeight:(CGFloat)pullToRefreshHeight
                 pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed
 {
+    [self addPullToRefreshWithActionHandler:actionHandler
+                            backgroundColor:customBackgroundColor
+                        pullToRefreshHeight:pullToRefreshHeight
+                  pullToRefreshHeightShowed:pullToRefreshHeightShowed
+                programmingAnimationOffestY:0];
+}
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                      pullToRefreshHeight:(CGFloat)pullToRefreshHeight
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed
+              programmingAnimationOffestY:(CGFloat)programmingAnimationOffestY
+{
+    self.pullToRefreshView.offsetY = programmingAnimationOffestY;
     KoaPullToRefreshViewHeight = pullToRefreshHeight;
     KoaPullToRefreshViewHeightShowed = pullToRefreshHeightShowed;
     KoaPullToRefreshViewTitleBottomMargin += pullToRefreshHeightShowed;
@@ -391,7 +406,7 @@ static char UIScrollViewPullToRefreshView;
     [self layoutSubviews];
     
     if(fequalzero(self.scrollView.contentOffset.y)) {
-        [self.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.frame.size.height) animated:YES];
+        [self.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) animated:YES];
         self.wasTriggeredByUser = NO;
     }
     else

@@ -80,7 +80,7 @@ static char UIScrollViewPullToRefreshView;
                             backgroundColor:customBackgroundColor
                         pullToRefreshHeight:pullToRefreshHeight
                   pullToRefreshHeightShowed:pullToRefreshHeightShowed
-                programmingAnimationOffestY:0];
+                programmingAnimationOffestY:pullToRefreshHeight];
 }
 
 - (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
@@ -119,6 +119,8 @@ static char UIScrollViewPullToRefreshView;
         
         self.pullToRefreshView = view;
         self.showsPullToRefresh = YES;
+    } else {
+        self.pullToRefreshView.pullToRefreshActionHandler = actionHandler;
     }
 }
 
@@ -341,11 +343,17 @@ static char UIScrollViewPullToRefreshView;
     //Set content offset for special cases
     if(self.state != KoaPullToRefreshStateLoading) {
         if (self.scrollView.contentOffset.y > -KoaPullToRefreshViewHeightShowed && self.scrollView.contentOffset.y < 0) {
-            [self.scrollView setContentInset:UIEdgeInsetsMake(abs(self.scrollView.contentOffset.y), self.scrollView.contentInset.left, self.scrollView.contentInset.bottom, self.scrollView.contentInset.right)];
+            [self.scrollView setContentInset:UIEdgeInsetsMake(abs(self.scrollView.contentOffset.y),
+                                                              self.scrollView.contentInset.left,
+                                                              self.scrollView.contentInset.bottom,
+                                                              self.scrollView.contentInset.right)];
         } else if(self.scrollView.contentOffset.y > -KoaPullToRefreshViewHeightShowed) {
             [self.scrollView setContentInset:UIEdgeInsetsZero];
         } else {
-            [self.scrollView setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed, self.scrollView.contentInset.left, self.scrollView.contentInset.bottom, self.scrollView.contentInset.right)];
+            [self.scrollView setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed,
+                                                              self.scrollView.contentInset.left,
+                                                              self.scrollView.contentInset.bottom,
+                                                              self.scrollView.contentInset.right)];
         }
     }
     self.wasTriggeredByUser = YES;
@@ -462,7 +470,6 @@ static char UIScrollViewPullToRefreshView;
         case KoaPullToRefreshStateStopped:
             [self stopRotatingIcon];
             [self resetScrollViewContentInset];
-            self.scrollView.contentOffset = CGPointZero;
             self.wasTriggeredByUser = YES;
             break;
             

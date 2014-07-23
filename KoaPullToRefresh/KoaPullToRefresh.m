@@ -89,7 +89,6 @@ static char UIScrollViewPullToRefreshView;
                 pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed
               programmingAnimationOffestY:(CGFloat)programmingAnimationOffestY
 {
-    self.pullToRefreshView.offsetY = programmingAnimationOffestY;
     KoaPullToRefreshViewHeight = pullToRefreshHeight;
     KoaPullToRefreshViewHeightShowed = pullToRefreshHeightShowed;
     KoaPullToRefreshViewTitleBottomMargin += pullToRefreshHeightShowed;
@@ -122,6 +121,8 @@ static char UIScrollViewPullToRefreshView;
     } else {
         self.pullToRefreshView.pullToRefreshActionHandler = actionHandler;
     }
+    
+    self.pullToRefreshView.offsetY = programmingAnimationOffestY;
 }
 
 - (void)setPullToRefreshView:(KoaPullToRefreshView *)pullToRefreshView {

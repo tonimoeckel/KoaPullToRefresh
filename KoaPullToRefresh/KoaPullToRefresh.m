@@ -34,8 +34,9 @@ static CGFloat KoaPullToRefreshViewTitleBottomMargin = 12;
 
 
 - (void)resetScrollViewContentInset;
-- (void)setScrollViewContentInsetForLoading;
-- (void)setScrollViewContentInset:(UIEdgeInsets)insets;
+- (void)setScrollViewContentInsetForLoadingWithComplitionBlock:(void(^)())complitionBlock;
+- (void)setScrollViewContentInset:(UIEdgeInsets)contentInset withComplitionBlock:(void(^)())complitionBlock;
+- (void)setScrollViewContentOffset:(CGPoint)contentOffset withComplitionBlock:(void(^)())complitionBlock;
 
 @end
 
@@ -190,9 +191,9 @@ static char UIScrollViewPullToRefreshView;
         [self.loaderLabel setTextAlignment:NSTextAlignmentLeft];
         
         self.titles = [NSMutableArray arrayWithObjects: NSLocalizedString(@"Pull",),
-                                                        NSLocalizedString(@"Release",),
-                                                        NSLocalizedString(@"Loading",),
-                                                        nil];
+                       NSLocalizedString(@"Release",),
+                       NSLocalizedString(@"Loading",),
+                       nil];
         
         self.wasTriggeredByUser = YES;
     }
@@ -260,10 +261,19 @@ static char UIScrollViewPullToRefreshView;
     
     UIEdgeInsets currentInsets = self.scrollView.contentInset;
     currentInsets.top = self.originalTopInset;
-    [self setScrollViewContentInset:currentInsets];
+    
+    __weak KoaPullToRefreshView *weakSelf = self;
+    [self setScrollViewContentInset:currentInsets withComplitionBlock:^{
+        if ([weakSelf.scrollView isKindOfClass:[UICollectionView class]]) {
+            if (weakSelf.scrollView.contentOffset.y < 0) {
+                [weakSelf.scrollView setContentOffset:CGPointZero animated:YES];
+            }
+        }
+    }];
 }
 
-- (void)setScrollViewContentInsetForLoading {
+- (void)setScrollViewContentInsetForLoadingWithComplitionBlock:(void(^)())complitionBlock
+{
     if (self.disable) {
         return;
     }
@@ -272,17 +282,22 @@ static char UIScrollViewPullToRefreshView;
     //CGFloat offset = MAX(self.scrollView.contentOffset.y * -1, 0);
     //currentInsets.top = MIN(offset, self.originalTopInset + self.bounds.size.height);
     currentInsets.top = self.originalTopInset + self.bounds.size.height;
-    [self setScrollViewContentInset:currentInsets];
+    [self setScrollViewContentInset:currentInsets withComplitionBlock:complitionBlock];
 }
 
-- (void)setScrollViewContentInset:(UIEdgeInsets)contentInset {
+- (void)setScrollViewContentInset:(UIEdgeInsets)contentInset withComplitionBlock:(void(^)())complitionBlock
+{
     [UIView animateWithDuration:0.3
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          self.scrollView.contentInset = contentInset;
                      }
-                     completion:NULL];
+                     completion:^(BOOL finished) {
+                         if (complitionBlock) {
+                             complitionBlock();
+                         }
+                     }];
 }
 
 #pragma mark - Observing
@@ -292,7 +307,7 @@ static char UIScrollViewPullToRefreshView;
     if (self.disable) {
         return;
     }
-
+    
     if (self.scrollView.contentOffset.y < -self.offsetY && self.programmaticallyLoading) {
         self.scrollView.contentOffset = CGPointMake(0, -self.offsetY);
     }
@@ -444,14 +459,36 @@ static char UIScrollViewPullToRefreshView;
     self.state = KoaPullToRefreshStateTriggered;
     [self layoutSubviews];
     
-    [self.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) animated:YES];
-
-    self.state = KoaPullToRefreshStateLoading;
+    __weak KoaPullToRefreshView *weakSelf = self;
+    [self setScrollViewContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) withComplitionBlock:^{
+        weakSelf.state = KoaPullToRefreshStateLoading;
+    }];
+//    [self.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) animated:YES];
+//    [self sets]
+    
 }
+
+- (void)setScrollViewContentOffset:(CGPoint)contentOffset withComplitionBlock:(void(^)())complitionBlock
+{
+    __weak KoaPullToRefreshView *weakSelf = self;
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         weakSelf.scrollView.contentOffset = contentOffset;
+                     }
+                     completion:^(BOOL finished) {
+                         if (complitionBlock) {
+                             complitionBlock();
+                         }
+                     }];
+    
+}
+
 
 - (void)stopAnimating {
     self.state = KoaPullToRefreshStateStopped;
-
+    
     if(self.scrollView.contentOffset.y < -self.originalTopInset) {
         [self.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.originalTopInset) animated:YES];
     }
@@ -479,10 +516,13 @@ static char UIScrollViewPullToRefreshView;
             
         case KoaPullToRefreshStateLoading:
             [self startRotatingIcon];
-            [self setScrollViewContentInsetForLoading];
             
-            if(previousState == KoaPullToRefreshStateTriggered && pullToRefreshActionHandler)
-                pullToRefreshActionHandler();
+            __weak void (^actionHandler)(void) = pullToRefreshActionHandler;
+            [self setScrollViewContentInsetForLoadingWithComplitionBlock:^{
+                if(previousState == KoaPullToRefreshStateTriggered && actionHandler) {
+                    actionHandler();
+                }
+            }];
             
             break;
     }

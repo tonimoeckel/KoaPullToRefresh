@@ -144,6 +144,7 @@ static char UIScrollViewPullToRefreshView;
     if(!showsPullToRefresh) {
         if (self.pullToRefreshView.isObserving) {
             [self removeObserver:self.pullToRefreshView forKeyPath:@"contentOffset"];
+            [self removeObserver:self.pullToRefreshView forKeyPath:@"contentSize"];
             [self removeObserver:self.pullToRefreshView forKeyPath:@"frame"];
             [self.pullToRefreshView resetScrollViewContentInset];
             self.pullToRefreshView.isObserving = NO;
@@ -160,6 +161,7 @@ static char UIScrollViewPullToRefreshView;
         }
     }
 }
+
 
 - (BOOL)showsPullToRefresh {
     return !self.pullToRefreshView.hidden;
@@ -205,6 +207,11 @@ static char UIScrollViewPullToRefreshView;
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         if (scrollView.showsPullToRefresh) {
             if (self.isObserving) {
+                if (self.state == KoaPullToRefreshStateLoading) {
+                    self.state = KoaPullToRefreshStateStopped;
+                    [self stopAnimating];
+                }
+
                 //If enter this branch, it is the moment just before "KoaPullToRefreshView's dealloc", so remove observer here
                 [scrollView removeObserver:self forKeyPath:@"contentOffset"];
                 [scrollView removeObserver:self forKeyPath:@"contentSize"];
@@ -463,9 +470,6 @@ static char UIScrollViewPullToRefreshView;
     [self setScrollViewContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) withComplitionBlock:^{
         weakSelf.state = KoaPullToRefreshStateLoading;
     }];
-//    [self.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) animated:YES];
-//    [self sets]
-    
 }
 
 - (void)setScrollViewContentOffset:(CGPoint)contentOffset withComplitionBlock:(void(^)())complitionBlock
@@ -515,6 +519,7 @@ static char UIScrollViewPullToRefreshView;
             break;
             
         case KoaPullToRefreshStateLoading:
+            self.programmaticallyLoading = NO;
             [self startRotatingIcon];
             
             __weak void (^actionHandler)(void) = pullToRefreshActionHandler;
@@ -539,7 +544,6 @@ static char UIScrollViewPullToRefreshView;
 }
 
 - (void)stopRotatingIcon {
-    self.programmaticallyLoading = NO;
     [self.loaderLabel.layer removeAnimationForKey:@"Spin"];
 }
 

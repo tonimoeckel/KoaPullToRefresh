@@ -94,7 +94,7 @@ static char UIScrollViewPullToRefreshView;
     KoaPullToRefreshViewHeightShowed = pullToRefreshHeightShowed;
     KoaPullToRefreshViewTitleBottomMargin += pullToRefreshHeightShowed;
     
-    [self setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed, self.contentInset.left, self.contentInset.bottom, self.contentInset.right)];
+    [self setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed + self.contentInset.top, self.contentInset.left, self.contentInset.bottom, self.contentInset.right)];
     
     if (!self.pullToRefreshView) {
         
@@ -124,6 +124,7 @@ static char UIScrollViewPullToRefreshView;
     }
     
     self.pullToRefreshView.offsetY = programmingAnimationOffestY;
+//    self.pullToRefreshView.titleLabel.alpha = 1;
 }
 
 - (void)setPullToRefreshView:(KoaPullToRefreshView *)pullToRefreshView {
@@ -315,8 +316,8 @@ static char UIScrollViewPullToRefreshView;
         return;
     }
     
-    if (self.scrollView.contentOffset.y < -self.offsetY && self.programmaticallyLoading) {
-        self.scrollView.contentOffset = CGPointMake(0, -self.offsetY);
+    if (self.scrollView.contentOffset.y < -(self.offsetY + self.originalTopInset) && self.programmaticallyLoading) {
+        self.scrollView.contentOffset = CGPointMake(0, -(self.offsetY + self.originalTopInset));
     }
     
     
@@ -342,11 +343,15 @@ static char UIScrollViewPullToRefreshView;
     }
     
     //Change title label alpha
-    [self.titleLabel setAlpha: ((contentOffset.y * -1) / KoaPullToRefreshViewHeight) - 0.1];
+    CGFloat absOffset = fabsf(self.originalTopInset);
+    absOffset /= contentOffset.y;
+    absOffset = 1.4 + absOffset;
+    [self.titleLabel setAlpha:absOffset];
+
     
     if(self.state != KoaPullToRefreshStateLoading) {
         CGFloat scrollOffsetThreshold;
-        scrollOffsetThreshold = self.frame.origin.y-self.originalTopInset;
+        scrollOffsetThreshold = self.frame.origin.y - self.originalTopInset;
         
         if(!self.scrollView.isDragging && self.state == KoaPullToRefreshStateTriggered)
             self.state = KoaPullToRefreshStateLoading;
@@ -366,14 +371,7 @@ static char UIScrollViewPullToRefreshView;
     //Set content offset for special cases
     if(self.state != KoaPullToRefreshStateLoading) {
         if (self.scrollView.contentOffset.y > -KoaPullToRefreshViewHeightShowed && self.scrollView.contentOffset.y < 0) {
-            [self.scrollView setContentInset:UIEdgeInsetsMake(abs(self.scrollView.contentOffset.y),
-                                                              self.scrollView.contentInset.left,
-                                                              self.scrollView.contentInset.bottom,
-                                                              self.scrollView.contentInset.right)];
-        } else if(self.scrollView.contentOffset.y > -KoaPullToRefreshViewHeightShowed) {
-            [self.scrollView setContentInset:UIEdgeInsetsZero];
-        } else {
-            [self.scrollView setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed,
+            [self.scrollView setContentInset:UIEdgeInsetsMake(self.originalTopInset + abs(self.scrollView.contentOffset.y),
                                                               self.scrollView.contentInset.left,
                                                               self.scrollView.contentInset.bottom,
                                                               self.scrollView.contentInset.right)];
@@ -467,7 +465,8 @@ static char UIScrollViewPullToRefreshView;
     [self layoutSubviews];
     
     __weak KoaPullToRefreshView *weakSelf = self;
-    [self setScrollViewContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.offsetY) withComplitionBlock:^{
+    [self setScrollViewContentOffset:CGPointMake(self.scrollView.contentOffset.x, -(self.originalTopInset + KoaPullToRefreshViewHeightShowed + self.frame.size.height))
+                 withComplitionBlock:^{
         weakSelf.state = KoaPullToRefreshStateLoading;
     }];
 }

@@ -267,10 +267,6 @@ static char UIScrollViewPullToRefreshView;
 
 - (void)resetScrollViewContentInset
 {
-    if (self.disable) {
-        return;
-    }
-    
     UIEdgeInsets currentInsets = self.scrollView.contentInset;
     currentInsets.top = self.originalTopInset;
     
@@ -286,10 +282,6 @@ static char UIScrollViewPullToRefreshView;
 
 - (void)setScrollViewContentInsetForLoadingWithComplitionBlock:(void(^)())complitionBlock
 {
-    if (self.disable) {
-        return;
-    }
-    
     UIEdgeInsets currentInsets = self.scrollView.contentInset;
     //CGFloat offset = MAX(self.scrollView.contentOffset.y * -1, 0);
     //currentInsets.top = MIN(offset, self.originalTopInset + self.bounds.size.height);
@@ -471,7 +463,9 @@ static char UIScrollViewPullToRefreshView;
     __weak KoaPullToRefreshView *weakSelf = self;
     [self setScrollViewContentOffset:CGPointMake(self.scrollView.contentOffset.x, -(self.originalTopInset + KoaPullToRefreshViewHeightShowed + self.frame.size.height))
                  withComplitionBlock:^{
-        weakSelf.state = KoaPullToRefreshStateLoading;
+                     if (weakSelf.state != KoaPullToRefreshStateLoading) {
+//                         weakSelf.state = KoaPullToRefreshStateLoading;
+                     }
     }];
 }
 
@@ -489,7 +483,6 @@ static char UIScrollViewPullToRefreshView;
                              complitionBlock();
                          }
                      }];
-    
 }
 
 
@@ -526,14 +519,20 @@ static char UIScrollViewPullToRefreshView;
             [self startRotatingIcon];
             
             __weak void (^actionHandler)(void) = pullToRefreshActionHandler;
+            __weak KoaPullToRefreshView *weakSelf = self;
             [self setScrollViewContentInsetForLoadingWithComplitionBlock:^{
                 if(previousState == KoaPullToRefreshStateTriggered && actionHandler) {
-                    actionHandler();
+                    [weakSelf performSelector:@selector(runPullToRefreshActionHandler) withObject:nil afterDelay:0.3];
                 }
             }];
             
             break;
     }
+}
+
+- (void)runPullToRefreshActionHandler
+{
+    pullToRefreshActionHandler();
 }
 
 - (void)startRotatingIcon {

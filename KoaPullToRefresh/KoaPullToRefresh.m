@@ -139,9 +139,13 @@ static char UIScrollViewPullToRefreshView;
     return objc_getAssociatedObject(self, &UIScrollViewPullToRefreshView);
 }
 
-- (void)setShowsPullToRefresh:(BOOL)showsPullToRefresh {
+- (void)setShowsPullToRefresh:(BOOL)showsPullToRefresh
+{
+    if (!self.pullToRefreshView) {
+        return;
+    }
+
     self.pullToRefreshView.hidden = !showsPullToRefresh;
-    
     if(!showsPullToRefresh) {
         if (self.pullToRefreshView.isObserving) {
             [self removeObserver:self.pullToRefreshView forKeyPath:@"contentOffset"];

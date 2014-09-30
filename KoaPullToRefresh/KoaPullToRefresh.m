@@ -406,7 +406,7 @@ static char UIScrollViewPullToRefreshView;
 
 - (NSString *)fontAwesomeIcon {
     if (!_fontAwesomeIcon) {
-        _fontAwesomeIcon = @"icon-refresh";
+        _fontAwesomeIcon = @"fa-refresh";
     }
     return _fontAwesomeIcon;
 }

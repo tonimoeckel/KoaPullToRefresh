@@ -16,8 +16,28 @@
 @interface UIScrollView (KoaPullToRefresh)
 
 - (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler;
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler withBackgroundColor:(UIColor *)customBackgroundColor;
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler withBackgroundColor:(UIColor *)customBackgroundColor withPullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                      pullToRefreshHeight:(CGFloat)pullToRefreshHeight
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
+
+- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+                          backgroundColor:(UIColor *)customBackgroundColor
+                      pullToRefreshHeight:(CGFloat)pullToRefreshHeight
+                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed
+              programmingAnimationOffestY:(CGFloat)programmingAnimationOffestY;
+
 
 @property (nonatomic, strong) KoaPullToRefreshView *pullToRefreshView;
 @property (nonatomic, assign) BOOL showsPullToRefresh;
@@ -43,6 +63,7 @@ typedef NSUInteger KoaPullToRefreshState;
 @property (nonatomic, strong, readonly) UILabel *loaderLabel;
 @property (nonatomic, strong, readonly) NSString *fontAwesomeIcon;
 @property (nonatomic, readonly) KoaPullToRefreshState state;
+@property (nonatomic, assign) BOOL disable;
 
 - (void)setTitle:(NSString *)title forState:(KoaPullToRefreshState)state;
 - (void)setFontAwesomeIcon:(NSString *)fontAwesomeIcon;

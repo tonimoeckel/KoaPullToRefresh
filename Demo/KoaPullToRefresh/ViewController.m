@@ -43,7 +43,7 @@
     //Add pull to refresh
     [self.tableView addPullToRefreshWithActionHandler:^{
         [self refreshTable];
-    } withBackgroundColor:[UIColor colorWithRed:0.251 green:0.663 blue:0.827 alpha:1] withPullToRefreshHeightShowed:4];
+    } backgroundColor:[UIColor colorWithRed:0.251 green:0.663 blue:0.827 alpha:1] pullToRefreshHeightShowed:4];
     
     //Customize pulltorefresh text colors
     [self.tableView.pullToRefreshView setTextColor:[UIColor whiteColor]];

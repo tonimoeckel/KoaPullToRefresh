@@ -237,33 +237,21 @@ static char UIScrollViewPullToRefreshView;
     self.titleLabel.text = [self.titles objectAtIndex:self.state];
     
     //Set title frame
-    
-    CGSize titleSize;
-    if ([self.titleLabel.text respondsToSelector:@selector(sizeWithAttributes:)]) {
-        titleSize = [self.titleLabel.text boundingRectWithSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.titleLabel.font} context:nil].size;
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) lineBreakMode:self.titleLabel.lineBreakMode];
-#pragma clang diagnostic pop
-    }
-    
-    
-    
+    CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) lineBreakMode:self.titleLabel.lineBreakMode];
     CGFloat titleY = KoaPullToRefreshViewHeight - KoaPullToRefreshViewHeightShowed - titleSize.height - KoaPullToRefreshViewTitleBottomMargin;
     
     [self.titleLabel setFrame:CGRectIntegral(CGRectMake(0, titleY, self.frame.size.width, titleSize.height))];
     
     //Set state of loader label
     switch (self.state) {
-            case KoaPullToRefreshStateStopped:
+        case KoaPullToRefreshStateStopped:
             [self.loaderLabel setAlpha:0];
             [self.loaderLabel setFrame:CGRectMake(self.frame.size.width/2 - self.loaderLabel.frame.size.width/2,
                                                   titleY - 100,
                                                   self.loaderLabel.frame.size.width,
                                                   self.loaderLabel.frame.size.height)];
             break;
-            case KoaPullToRefreshStateTriggered:
+        case KoaPullToRefreshStateTriggered:
             [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self.loaderLabel setAlpha:1];
                 [self.loaderLabel setFrame:CGRectMake(self.frame.size.width/2 - self.loaderLabel.frame.size.width/2,
@@ -418,7 +406,7 @@ static char UIScrollViewPullToRefreshView;
 
 - (NSString *)fontAwesomeIcon {
     if (!_fontAwesomeIcon) {
-        _fontAwesomeIcon = @"fa-refresh";
+        _fontAwesomeIcon = @"icon-refresh";
     }
     return _fontAwesomeIcon;
 }
@@ -527,10 +515,16 @@ static char UIScrollViewPullToRefreshView;
             break;
             
         case KoaPullToRefreshStateLoading:
+            self.programmaticallyLoading = NO;
             [self startRotatingIcon];
             
-            if(previousState == KoaPullToRefreshStateTriggered && pullToRefreshActionHandler)
-                pullToRefreshActionHandler();
+            __weak void (^actionHandler)(void) = pullToRefreshActionHandler;
+            __weak KoaPullToRefreshView *weakSelf = self;
+            [self setScrollViewContentInsetForLoadingWithComplitionBlock:^{
+                if(previousState == KoaPullToRefreshStateTriggered && actionHandler) {
+                    [weakSelf performSelector:@selector(runPullToRefreshActionHandler) withObject:nil afterDelay:0.3];
+                }
+            }];
             
             break;
     }

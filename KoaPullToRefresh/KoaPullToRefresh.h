@@ -25,10 +25,6 @@
 
 - (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
                           backgroundColor:(UIColor *)customBackgroundColor
-                pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
-
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
-                          backgroundColor:(UIColor *)customBackgroundColor
                       pullToRefreshHeight:(CGFloat)pullToRefreshHeight
                 pullToRefreshHeightShowed:(CGFloat)pullToRefreshHeightShowed;
 

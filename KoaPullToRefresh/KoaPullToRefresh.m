@@ -237,7 +237,11 @@ static char UIScrollViewPullToRefreshView;
     self.titleLabel.text = [self.titles objectAtIndex:self.state];
     
     //Set title frame
-    CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) lineBreakMode:self.titleLabel.lineBreakMode];
+    NSStringDrawingOptions options = NSStringDrawingTruncatesLastVisibleLine |
+    NSStringDrawingUsesLineFragmentOrigin;
+    NSDictionary *attr = @{NSFontAttributeName: self.titleLabel.font};
+    
+    CGSize titleSize = [self.titleLabel.text boundingRectWithSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) options:options attributes:attr context:nil].size;
     CGFloat titleY = KoaPullToRefreshViewHeight - KoaPullToRefreshViewHeightShowed - titleSize.height - KoaPullToRefreshViewTitleBottomMargin;
     
     [self.titleLabel setFrame:CGRectIntegral(CGRectMake(0, titleY, self.frame.size.width, titleSize.height))];
@@ -339,7 +343,7 @@ static char UIScrollViewPullToRefreshView;
     }
     
     //Change title label alpha
-    CGFloat absOffset = fabsf(self.originalTopInset);
+    CGFloat absOffset = fabs(self.originalTopInset);
     absOffset /= contentOffset.y;
     absOffset = 1.4 + absOffset;
     [self.titleLabel setAlpha:absOffset];
@@ -367,7 +371,7 @@ static char UIScrollViewPullToRefreshView;
     //Set content offset for special cases
     if(self.state != KoaPullToRefreshStateLoading) {
         if (self.scrollView.contentOffset.y > -KoaPullToRefreshViewHeightShowed && self.scrollView.contentOffset.y < 0) {
-            [self.scrollView setContentInset:UIEdgeInsetsMake(self.originalTopInset + abs(self.scrollView.contentOffset.y),
+            [self.scrollView setContentInset:UIEdgeInsetsMake(self.originalTopInset + fabs(self.scrollView.contentOffset.y),
                                                               self.scrollView.contentInset.left,
                                                               self.scrollView.contentInset.bottom,
                                                               self.scrollView.contentInset.right)];
@@ -393,9 +397,10 @@ static char UIScrollViewPullToRefreshView;
 
 - (UILabel *)loaderLabel {
     if(!_loaderLabel) {
-        _loaderLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width/2 - 17/2, 0, 17, 17)];
+        float size = 20;
+        _loaderLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width/2 - size/2, 0, size, size)];
         _loaderLabel.text = [NSString fontAwesomeIconStringForIconIdentifier:self.fontAwesomeIcon];
-        _loaderLabel.font = [UIFont fontWithName:kFontAwesomeFamilyName size:20];
+        _loaderLabel.font = [UIFont fontWithName:kFontAwesomeFamilyName size:size];
         _loaderLabel.backgroundColor = [UIColor clearColor];
         _loaderLabel.textColor = textColor;
         [_loaderLabel sizeToFit];
@@ -406,7 +411,7 @@ static char UIScrollViewPullToRefreshView;
 
 - (NSString *)fontAwesomeIcon {
     if (!_fontAwesomeIcon) {
-        _fontAwesomeIcon = @"fa-refresh";
+        _fontAwesomeIcon = @"fa-circle-o-notch";
     }
     return _fontAwesomeIcon;
 }
